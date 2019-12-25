@@ -1,0 +1,82 @@
+I"{.<p>likert package는 단어 그대로 리커트 척도(Likert scale)를 plot로 표현하기 위해 사용되는 패키지입니다. 리커트 척도를 간단하게 설명하자면, 제시된 문장에 대하여 응답자의 동의/비동의 수준을 측정하는 것인데요. 예를 들어 “나는 일주일 중에서 수요일이 가장 피곤하다”라는 질문에 대해 1) 매우 그렇다 2) 대체로 그렇다 3) 보통이다 4) 대체로 그렇지 않다 5) 전혀 그렇지 않다 와 같이, 5단계 리커트 척도로 표현할 수 있습니다.</p>
+
+<p>여러 논문을 보다보니 R의 likert package가 널리 사용되는 것 같았고, 그려진 plot도 깔끔하고 왠지 쿨해보였어요. 그렇지만 국내 블로그 중에는 likert package를 소개하는 글은 없는 듯 하여 정리해 봅니다. 사용법은 그렇게 어렵지 않습니다.</p>
+
+<p>​</p>
+
+<h3 id="r-코드">[R 코드]</h3>
+
+<div class="language-R highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">xlsx</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">likert</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">reshape</span><span class="p">)</span><span class="w">
+
+</span><span class="n">setwd</span><span class="p">(</span><span class="s2">"C:\\workspace"</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Load excel file </span><span class="w">
+</span><span class="n">question</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.xlsx</span><span class="p">(</span><span class="s2">"./result.xlsx"</span><span class="p">,</span><span class="w"> </span><span class="n">sheetIndex</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Header of question</span><span class="w">
+</span><span class="n">question_header</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">Opt1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Cookie"</span><span class="p">,</span><span class="w">
+                     </span><span class="n">Opt2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Macaron"</span><span class="p">,</span><span class="w">
+                     </span><span class="n">Opt3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Jellybean"</span><span class="p">,</span><span class="w">
+                     </span><span class="n">Opt4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Icecream"</span><span class="p">,</span><span class="w">
+                     </span><span class="n">Opt5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Frozen yogurt"</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Refine header</span><span class="w">
+</span><span class="n">question</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rename</span><span class="p">(</span><span class="n">question</span><span class="p">,</span><span class="w"> </span><span class="n">question_header</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Question options</span><span class="w">
+</span><span class="n">likert_levels</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Dislike very much"</span><span class="p">,</span><span class="w"> 
+                   </span><span class="s2">"Dislike somewhat"</span><span class="p">,</span><span class="w"> 
+                   </span><span class="s2">"Neither Like nor Dislike"</span><span class="p">,</span><span class="w"> 
+                   </span><span class="s2">"Like somewhat"</span><span class="p">,</span><span class="w"> 
+                   </span><span class="s2">"Like"</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Question options: convert number to text</span><span class="w">
+</span><span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nf">seq_along</span><span class="p">(</span><span class="n">question</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="n">question</span><span class="p">[</span><span class="w"> </span><span class="p">,</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">factor</span><span class="p">(</span><span class="n">question</span><span class="p">[,</span><span class="n">i</span><span class="p">],</span><span class="w"> </span><span class="n">levels</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">),</span><span class="w"> </span><span class="n">labels</span><span class="o">=</span><span class="n">likert_levels</span><span class="p">)</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="c1"># Get likert object</span><span class="w">
+</span><span class="n">question_plot</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">likert</span><span class="p">(</span><span class="n">question</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Draw plot</span><span class="w">
+</span><span class="n">likert.bar.plot</span><span class="p">(</span><span class="n">question_plot</span><span class="w">
+                </span><span class="c1">#,plot.percent.high=FALSE </span><span class="w">
+                </span><span class="c1">#,plot.percent.low=FALSE</span><span class="w">
+                </span><span class="c1">#,plot.percent.neutral=FALSE</span><span class="w">
+                </span><span class="p">,</span><span class="n">centered</span><span class="o">=</span><span class="kc">FALSE</span><span class="w">
+                </span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">guides</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="n">guide_legend</span><span class="p">(</span><span class="n">nrow</span><span class="o">=</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">byrow</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">ggtitle</span><span class="p">(</span><span class="s2">"How much do you like desserts?"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">theme_classic</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">theme</span><span class="p">(</span><span class="n">legend.title</span><span class="o">=</span><span class="n">element_blank</span><span class="p">(),</span><span class="w">
+        </span><span class="n">legend.position</span><span class="o">=</span><span class="s2">"bottom"</span><span class="p">,</span><span class="w">
+        </span><span class="n">legend.direction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"horizontal"</span><span class="p">,</span><span class="w">
+        </span><span class="n">legend.text</span><span class="o">=</span><span class="n">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">12</span><span class="p">),</span><span class="w">
+        </span><span class="n">legend.key.height</span><span class="o">=</span><span class="n">unit</span><span class="p">(</span><span class="m">0.6</span><span class="p">,</span><span class="s2">"cm"</span><span class="p">),</span><span class="w">
+        </span><span class="n">plot.margin</span><span class="o">=</span><span class="n">unit</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">0.1</span><span class="p">,</span><span class="m">0.1</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">),</span><span class="s2">"cm"</span><span class="p">),</span><span class="w">
+        </span><span class="n">strip.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">10</span><span class="p">),</span><span class="w">
+        </span><span class="n">axis.title.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_text</span><span class="p">(</span><span class="n">vjust</span><span class="o">=</span><span class="m">-0.8</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="m">8</span><span class="p">),</span><span class="w">
+        </span><span class="n">axis.title.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_text</span><span class="p">(</span><span class="n">vjust</span><span class="o">=</span><span class="m">-0.2</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="m">8</span><span class="p">),</span><span class="w">
+        </span><span class="n">axis.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">12</span><span class="p">),</span><span class="w">
+        </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_text</span><span class="p">(</span><span class="n">angle</span><span class="o">=</span><span class="m">0</span><span class="p">,</span><span class="n">vjust</span><span class="o">=</span><span class="m">0.5</span><span class="p">),</span><span class="w">
+        </span><span class="n">plot.title</span><span class="o">=</span><span class="n">element_text</span><span class="p">(</span><span class="n">face</span><span class="o">=</span><span class="s2">"bold"</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="o">=</span><span class="m">20</span><span class="p">,</span><span class="w"> </span><span class="n">vjust</span><span class="o">=</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="o">=</span><span class="s2">"Blue"</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
+
+<p>​</p>
+
+<h3 id="결과-화면">[결과 화면]</h3>
+
+<p><img src="https://dl.dropboxusercontent.com/s/tul4ppxzfgw9ane/Rplot.jpeg" alt="Image" width="100%" height="100%" /></p>
+
+<p>​</p>
+
+<h3 id="reference"><em>Reference</em></h3>
+
+<ul>
+  <li>https://cran.r-project.org/web/packages/likert/likert.pdf</li>
+  <li>https://ko.wikipedia.org/wiki/리커트_척도</li>
+</ul>
+
+:ET

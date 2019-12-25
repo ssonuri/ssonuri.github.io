@@ -1,0 +1,60 @@
+# Site Info
+title: ssonuri's blog
+tagline: 'developer'
+description: '생각하는 대로 살지 않으면 <br/>사는 대로 생각하게 된다'
+baseurl: ''
+url: http://ssonuri.github.io
+logo: '/public/logo.png'
+
+# Site configurations
+gems:
+  - jekyll-paginate
+markdown: kramdown
+kramdown:
+  input: GFM
+excerpt_separator: "<!-- more -->"
+sass:
+  style: compressed
+  sass_dir: _scss    
+paginate: 5
+paginate_path: '/blog/page:num'
+permalink: pretty
+
+version: 1.0.0
+
+# About/contact
+author:
+  name: ssonuri
+  description: '생각하는 대로 살지 않으면 <br/>사는 대로 생각하게 된다'
+  contact:
+    linkedin:  https://www.linkedin.com/in/yuri-son-29173773/
+    github:    https://github.com/ssonuri
+    # facebook:  <hide>
+    #email: 
+
+# Navigation (2nd level links supported)
+nav:
+  Home:           
+    - '/'
+  Blog:           
+    - '/blog/'
+    - { Categories: '/blog/categories/' }
+    - { Tags: '/blog/tags/' }
+  About:          
+    - '/about/'
+#  Github Project: 
+#    - 'http://ssonuri.github.io/'
+
+# Where are tags and categories displayed
+tag_page: '/blog/tags/'
+category_page: '/blog/categories/'
+
+hero:
+  image: /public/img/DSCF1007.jpg
+  #caption: Original Artwork &copy; <a href="http://yalestewart.deviantart.com/art/We-Will-Be-Giants-370176475">Yale Stewart</a>
+
+# Puglins
+mathjax: true # whether support mathjax
+google_analytics_token: 'UA-155031210-1' # leave blank if you don't want google analytics
+disqus_short_name: 'ssonuri' # leave blank if you don't want disqus
+

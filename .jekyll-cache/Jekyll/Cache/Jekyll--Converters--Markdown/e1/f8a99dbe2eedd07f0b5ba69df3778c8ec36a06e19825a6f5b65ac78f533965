@@ -1,0 +1,86 @@
+I"�)<h2 id="크롤링crawling-vs-스크래핑scraping">크롤링(Crawling) vs 스크래핑(Scraping)</h2>
+<p>시작하기에 앞서, 크롤링(Crawling)과 스크래핑(Scraping)를 구분할 필요가 있을 것 같습니다. 둘 다 데이터를 수집한다는 점에서 목적은 같으나, 방법, 수집 대상 등에서 차이가 있습니다.</p>
+
+<p>스크래핑은 수집 대상이 반드시 웹일 필요는 없으며, DB나 Social media 등 적용 범위가 넓다고 합니다. 어렸을 적에 신문기사를 잘라서 스케치북에 붙여서 냈던 NIE(Newspaper in Education)를 기억하시나요? 그 때는 관심 정보를 찾아 일일이 자르고 오려 붙였다면, 이제는 아날로그적 행위를 자동화 해주는 도구 및 API를 사용하여 데이터를 편리하게 추출하고 정리할 수 있지요.</p>
+
+<p>반면 크롤링은 크롤러(봇, Bot)가 웹페이지의 소스를 긁어오는 것을 의미합니다. 긁어온 데이터로부터 원하는 대로 정보를 추출하는 것을 직접 구현해야 하는 것이 장점이자 단점이 될 수도 있겠습니다. 엄청난 양의 데이터를 처리해야 하고 예외처리 등을 고려해본다면 제법 만만치 않은 작업이 될 것 같네요. 요즘 왠만한 서비스들은 API를 제공하고 있으므로, 필요에 따라 잘 선택하면 될 것 같습니다.</p>
+
+<p>​</p>
+
+<h2 id="praw로-스크래핑하기">PRAW로 스크래핑하기</h2>
+<p>아래는 PRAW(The Python Reddit API Wrapper)을 사용하여 Reddit에서 본문과 최상위 레벨의 댓글만 읽어서 CSV파일로 저장하는 파이썬 코드입니다. 실제로 동작하기 위해서는 Reddit에서 <strong>Create application</strong> 절차를 밟고 <strong>Client ID</strong>와 <strong>Secret</strong>을 발급받아서 코드에 적용해야 합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">praw</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="n">CLIENT_ID</span> <span class="o">=</span> <span class="s">'????'</span>
+<span class="n">CLIENT_SECRET</span> <span class="o">=</span> <span class="s">'????'</span>
+<span class="n">USER_AGENT</span> <span class="o">=</span> <span class="s">'????'</span>
+<span class="n">SUB_REDDIT</span> <span class="o">=</span> <span class="s">'HealthAnxiety'</span> <span class="c1"># Crawling할 분야
+</span><span class="n">LIMIT</span> <span class="o">=</span> <span class="mi">999</span>  <span class="c1"># 수집할 데이터의 양
+</span>
+
+<span class="k">def</span> <span class="nf">scrap_reddit</span><span class="p">():</span>
+    <span class="n">reddit</span> <span class="o">=</span> <span class="n">praw</span><span class="o">.</span><span class="n">Reddit</span><span class="p">(</span><span class="n">client_id</span><span class="o">=</span><span class="n">CLIENT_ID</span><span class="p">,</span>
+                         <span class="n">client_secret</span><span class="o">=</span><span class="n">CLIENT_SECRET</span><span class="p">,</span>
+                         <span class="n">user_agent</span><span class="o">=</span><span class="n">USER_AGENT</span><span class="p">)</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s">"======================================="</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"Scrapping Reddit Submission"</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"=======================================</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span>
+
+    <span class="n">scrap_data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">total_subreddit</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">submission</span> <span class="ow">in</span> <span class="n">reddit</span><span class="o">.</span><span class="n">subreddit</span><span class="p">(</span><span class="n">SUB_REDDIT</span><span class="p">)</span><span class="o">.</span><span class="n">hot</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">LIMIT</span><span class="p">):</span>
+        <span class="n">total_subreddit</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">submission_dict</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">submission</span><span class="p">)</span>
+
+        <span class="c1"># Title
+</span>        <span class="k">print</span><span class="p">(</span><span class="s">"[Title </span><span class="si">%03</span><span class="s">d] : "</span> <span class="o">%</span> <span class="p">(</span><span class="n">total_subreddit</span><span class="p">),</span> <span class="n">submission</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+        <span class="n">writelist</span> <span class="o">=</span> <span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcfromtimestamp</span><span class="p">(</span><span class="n">submission</span><span class="o">.</span><span class="n">created_utc</span><span class="p">),</span> 
+                     <span class="n">submission</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> 
+                     <span class="n">submission_dict</span><span class="p">[</span><span class="s">'selftext'</span><span class="p">]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">),</span> <span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Comment
+</span>        <span class="n">post</span> <span class="o">=</span> <span class="n">reddit</span><span class="o">.</span><span class="n">submission</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">submission_dict</span><span class="p">[</span><span class="s">'id'</span><span class="p">])</span>
+        <span class="n">total_cmt</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">top_level_comment</span> <span class="ow">in</span> <span class="n">post</span><span class="o">.</span><span class="n">comments</span><span class="p">:</span>
+            <span class="n">writelist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">top_level_comment</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">))</span>
+            <span class="n">total_cmt</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">writelist</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_cmt</span>
+        <span class="n">scrap_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">writelist</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">'----------------------------------------------'</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">scrap_data</span><span class="p">,</span> <span class="n">total_subreddit</span>
+
+
+<span class="k">def</span> <span class="nf">write_csv</span><span class="p">(</span><span class="n">scrap_data</span><span class="p">,</span> <span class="n">total_subreddit</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">"data_</span><span class="si">%</span><span class="s">Y</span><span class="si">%</span><span class="s">m</span><span class="si">%</span><span class="s">d_</span><span class="si">%</span><span class="s">H</span><span class="si">%</span><span class="s">M</span><span class="si">%</span><span class="s">S.csv"</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">()),</span> 
+              <span class="s">'wt'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="nb">file</span><span class="p">:</span>
+        <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s">","</span><span class="p">,</span> <span class="n">lineterminator</span><span class="o">=</span><span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">scrap_data</span><span class="p">:</span>
+            <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">scrap_data</span><span class="p">,</span> <span class="n">total_subreddit</span> <span class="o">=</span> <span class="n">scrap_reddit</span><span class="p">()</span>
+    <span class="n">write_csv</span><span class="p">(</span><span class="n">scrap_data</span><span class="p">,</span> <span class="n">total_subreddit</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</code></pre></div></div>
+<p>​                ​</p>
+
+<h3 id="reference"><strong><em>Reference</em></strong></h3>
+<ul>
+  <li>https://www.promptcloud.com/data-scraping-vs-data-crawling</li>
+  <li>https://praw.readthedocs.io/en/latest
+  ​</li>
+</ul>
+:ET
