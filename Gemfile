@@ -1,14 +1,9 @@
-source 'https://rubygems.org'
+# frozen_string_literal: true
 
-group :jekyll_plugins do
-gem 'jekyll'
-gem 'jekyll-sitemap'
-gem 'jemoji'
-gem 'jekyll-redirect-from'
-gem 'jekyll-paginate'
-gem 'jekyll-compose'
+source "https://rubygems.org"
+
+gemspec
+
+group :test do
+  gem "html-proofer", "~> 4.0"
 end
-
-gem 'font-awesome-sass'
-gem 'kramdown'
-gem 'rouge'
