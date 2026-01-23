@@ -21,7 +21,7 @@ title                    : "HarperLog"
 title_separator          : "|"
 subtitle                 : "? between !"
 name                     : "Harper"
-description              : "Developement Log"
+description              : "Development Log"
 url                      : "https://ssonuri.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : ssonuri/ssonuri.github.io # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
@@ -117,11 +117,11 @@ author:
   avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
   bio              : "매일매일 단단한 느낌표!"
   location         : "South Korea"
-  email            : soonuu217@gmail.com
+  email            : "soonuu217@gmail.com"
   links:
     - label: "Email"
       icon: "fas fa-fw fa-envelope-square"
-      # url: "mailto:your.name@email.com"
+      # url: "mailto:soonuu217@gmail.com"
     - label: "Website"
       icon: "fas fa-fw fa-link"
       # url: "https://your-website.com"
@@ -325,3 +325,6 @@ defaults:
       comments: # true
       share: true
       related: true
+					show_date: true
+
+date_format: "%Y-%m-%d"
