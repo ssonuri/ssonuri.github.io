@@ -197,6 +197,11 @@
 
     &.site-title {
       margin-inline-start: 0;
+      color: $text-color;
+
+      &:hover {
+        color: $text-color;
+      }
     }
   }
 

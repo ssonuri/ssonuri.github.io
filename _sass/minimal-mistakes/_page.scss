@@ -89,6 +89,14 @@ body {
     border-bottom: 1px solid $border-color;
   }
 
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: $primary-color;
+  }
+
   h1,
   h2,
   h3,
@@ -174,6 +182,12 @@ body {
   blockquote + .small {
     margin-top: -1.5em;
     padding-inline-start: 1.25rem;
+  }
+
+  /* vertical alignment for first content */
+  :first-child,
+  aside + :nth-child(2) {
+    margin-top: 0em;
   }
 }
 
